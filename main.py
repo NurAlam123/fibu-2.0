@@ -26,11 +26,12 @@ class BotClient(commands.Bot):
 #####
 
 
-# bot client
+# bot intents
 intents = discord.Intents.default()
 intents.members = True
 
-bot = BotClient(prefix="!", intents=intents)
+# bot client
+bot = BotClient(prefix="/", intents=intents)
 
 # Bot variable
 # Team
@@ -43,28 +44,39 @@ bot.TEAM = [
 ]  # our team's discord ids
 
 # version
-bot.version = 'v0.4.8'
+bot.version = 'v2.0'
 #####
 
-# on ready event
+#### on ready event ###
 
 
 @bot.event
 async def on_ready():
     print(f"Logged in {bot.user}")
     print("------")
+#### ping command ###
 
-# ping command
 
-
-@bot.tree.command()
+@bot.tree.command(name="ping", description="Pong!")
 async def ping(ctx: discord.Interaction):
     embed_message = discord.Embed(
         title="Pong :ping_pong:",
         description=f"{round(bot.latency*1000)} _ms_!",
         color=0xffdf08)
     await ctx.response.send_message(embed=embed_message, ephemeral=True)
+####
 
+
+@bot.tree.command()
+async def sync_command(ctx: discord.Interaction):
+    try:
+        await bot.unload_extension(f"cogs.info")
+    except:
+        await bot.load_extension(f"cogs.info")
+    bot.tree.copy_global_to(guild=MY_GUILD)
+    await bot.tree.sync(guild=MY_GUILD)
+    await ctx.response.send_message("Synced!!", ephemeral=True)
+#####
 
 # hehe!! lets run the boy!! :D
 bot.run(TOKEN)
