@@ -1,5 +1,4 @@
 # discord imports
-from code import compile_command
 import discord
 from discord import app_commands
 from discord.ext import commands
@@ -29,6 +28,8 @@ class BotClient(commands.Bot):
 
 # bot client
 intents = discord.Intents.default()
+intents.members = True
+
 bot = BotClient(prefix="!", intents=intents)
 
 # Bot variable

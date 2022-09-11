@@ -10,12 +10,12 @@ class Information(commands.Cog):
         self.bot = client
         self.colors = [0x7700fe, 0x340e72, 0xfdb706]
 
-    @app_commands.command()
-    async def info(self, ctx: discord.Interaction):
-        # await ctx.response.send_message("hello!")
+    # server information - command
+    @app_commands.command(name="serverinfo", description="Show information about the server.")
+    async def serverinfo(self, ctx: discord.Interaction):
         guild = ctx.guild
 
-        ### Information Variable ###
+        ### Guild Information Variable ###
         guild_roles = "\n".join(f"{i}. {j}" for i, j in enumerate(
             [f"{role}" for role in guild.roles][::-1], 1))  # fetch guild roles
         guild_name = guild.name
@@ -24,31 +24,14 @@ class Information(commands.Cog):
         guild_owner_id = guild.owner_id
         # guild_region = str(guild.region).capitalize()
         guild_description = guild.description
-        guild_icon = str(guild.icon_url)
+        guild_icon = str(guild.icon.url)
         guild_created_at = (guild.created_at).strftime("%a, %d-%b-%Y %I:%M %p")
 
         ### Member count ###
         members = guild.member_count
-        humans = 0
-        online = 0
-        offline = 0
-        idle = 0
-        dnd = 0
-        for m in guild.members:
-            status = str(m.status)
-            if not m.bot:
-                humans += 1
-            if status == "online":
-                online += 1
-            elif status == "offline" or status == "invisible":
-                offline += 1
-            elif status == "idle":
-                idle += 1
-            elif status == "dnd" or status == "do_not_disturb":
-                dnd += 1
+        humans = len([i for i in guild.members if not i.bot])
         bots = members - humans
-        ######
-
+        #### Channels ####
         guild_text_channels = len(guild.text_channels)
         guild_voice_channels = len(guild.voice_channels)
         guild_stage_channels = len(guild.stage_channels)
@@ -69,7 +52,7 @@ class Information(commands.Cog):
             inline=False)
         info_em.add_field(
             name="Owner",
-            value=f"{guild_owner}",
+            value=f"{guild_owner.mention}",
             inline=False)
         info_em.add_field(
             name="Owner ID",
@@ -77,10 +60,7 @@ class Information(commands.Cog):
             inline=False)
         info_em.add_field(
             name="Server Created At",
-            value=f"```\n{guild_created_at}\n```")
-        info_em.add_field(
-            name="Region",
-            value=f"{guild_region}",
+            value=f"```\n{guild_created_at}\n```",
             inline=False)
         if guild_description:
             info_em.add_field(
@@ -89,10 +69,10 @@ class Information(commands.Cog):
                 inline=False)
         info_em.add_field(
             name=f"Members [{members}]",
-            value=f"```\nHumans: {humans}\nBots: {bots}\n--------------------\nOnline: {online}\nOffline: {offline}\nIdle: {idle}\nDND: {dnd}\n```", inline=False)
+            value=f"```\nHumans: {humans}\nBots: {bots}\n```", inline=False)
         info_em.add_field(
             name="Channels and Categories",
-            value=f"```\nCategories: {guild_categories}\n│\n└── Channels: {guild_channels}\n    ├── Text Channels: {guild_text_channels}\n    ├── Voice Channels: {guild_voice_channels}\n└── Stage Channels: {guild_stage_channels}\n```",
+            value=f"```\nCategories: {guild_categories}\n\tChannels: {guild_channels}\n\t\tText Channels: {guild_text_channels}\n\t\tVoice Channels: {guild_voice_channels}\n\tStage Channels: {guild_stage_channels}\n```",
             inline=False)
         info_em.add_field(
             name="Roles",
@@ -101,7 +81,7 @@ class Information(commands.Cog):
 
         info_em.set_thumbnail(url=f"{guild_icon}")
         info_em.set_footer(
-            text=f"Requested by {ctx.author} | Programming Hero ")
+            text=f"Requested by {ctx.user} | Programming Hero ")
         await ctx.response.send_message(embed=info_em)
 
 
