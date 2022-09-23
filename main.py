@@ -3,8 +3,11 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 import os
+
+
 from dotenv import load_dotenv
 load_dotenv()
+
 
 # const variable
 MY_GUILD = discord.Object(int(os.getenv("GUILD")))
@@ -66,10 +69,8 @@ async def ping(ctx: discord.Interaction):
 
 @bot.tree.command()
 async def sync_command(ctx: discord.Interaction):
-    try:
-        await bot.unload_extension(f"cogs.info")
-    except:
-        await bot.load_extension(f"cogs.info")
+    await bot.unload_extension(f"cogs.info")
+    await bot.load_extension(f"cogs.info")
     bot.tree.copy_global_to(guild=MY_GUILD)
     await bot.tree.sync(guild=MY_GUILD)
     await ctx.response.send_message("Synced!!", ephemeral=True)

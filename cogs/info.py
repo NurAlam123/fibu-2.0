@@ -1,11 +1,11 @@
-from email.mime import application
-from ssl import get_default_verify_paths
+import imp
 import discord
 from discord import app_commands
 from discord.ext import commands
 
 import random
-from datetime import datetime as time
+import time
+
 # import pymongo
 
 
@@ -15,8 +15,11 @@ class Information(commands.Cog):
         self.colors = [0x7700fe, 0x340e72, 0xfdb706]
 
     # server information - command
-    @app_commands.command(name="server", description="Show information about the server.")
-    async def serverinfo(self, ctx: discord.Interaction) -> None:
+    @app_commands.command(
+        name="server-info",
+        description="Show information about the server."
+    )
+    async def _serverinfo(self, ctx: discord.Interaction) -> None:
         guild = ctx.guild
 
         ### Guild Information Variable ###
@@ -29,7 +32,7 @@ class Information(commands.Cog):
         # guild_region = str(guild.region).capitalize()
         guild_description = guild.description
         guild_icon = str(guild.icon.url)
-        guild_created_at = (guild.created_at).strftime("%a, %d-%b-%Y %I:%M %p")
+        guild_created_at = int(time.mktime((guild.created_at).timetuple()))
 
         ### Member count ###
         members = guild.member_count
@@ -45,43 +48,54 @@ class Information(commands.Cog):
         ### Embed Part ###
         info_em = discord.Embed(
             title="Server Information",
-            color=random.choice(self.colors))
+            color=random.choice(self.colors)
+        )
         info_em.add_field(
             name="Name",
             value=f"{guild_name}",
-            inline=False)
+            inline=False
+        )
         info_em.add_field(
             name="Guild ID",
             value=f"```\n{guild_id}\n```",
-            inline=False)
+            inline=False
+        )
         info_em.add_field(
             name="Owner",
             value=f"{guild_owner.mention}",
-            inline=False)
+            inline=False
+        )
         info_em.add_field(
             name="Owner ID",
             value=f"```\n{guild_owner_id}\n```",
-            inline=False)
+            inline=False
+        )
         info_em.add_field(
             name="Server Created At",
             value=f"```\n{guild_created_at}\n```",
-            inline=False)
+            inline=False
+        )
         if guild_description:
             info_em.add_field(
                 name="Guild Description",
                 value=f"{guild_description}",
-                inline=False)
+                inline=False
+            )
         info_em.add_field(
             name=f"Members [{members}]",
-            value=f"```\nHumans: {humans}\nBots: {bots}\n```", inline=False)
+            value=f"```\nHumans: {humans}\nBots: {bots}\n```",
+            inline=False
+        )
         info_em.add_field(
             name="Channels and Categories",
-            value=f"```\nCategories: {guild_categories}\n\tChannels: {guild_channels}\n\t\tText Channels: {guild_text_channels}\n\t\tVoice Channels: {guild_voice_channels}\n\tStage Channels: {guild_stage_channels}\n```",
-            inline=False)
+            value=f"```\nCategories: {guild_categories}\n----------\nChannels: {guild_channels}\n\tText Channels: {guild_text_channels}\n\tVoice Channels: {guild_voice_channels}\nStage Channels: {guild_stage_channels}\n```",
+            inline=False
+        )
         info_em.add_field(
             name="Roles",
             value=f"```\n{guild_roles}\n```",
-            inline=False)
+            inline=False
+        )
 
         info_em.set_thumbnail(url=f"{guild_icon}")
         info_em.set_footer(
@@ -89,13 +103,16 @@ class Information(commands.Cog):
         await ctx.response.send_message(embed=info_em)
 
     # fibu information - command
-    @app_commands.command(name="info", description="Displays information about the bot.")
+    @app_commands.command(
+        name="bot-info",
+        description="Displays information about the bot."
+    )
     async def _botinfo(self, ctx: discord.Interaction) -> None:
         msg = discord.Embed(
             title="My information",
             description="Hey there! I am **Fibu**. Your friend and a friendly bot. I am from Programming Hero",
-            color=0xffdf08,
-            timestamp=time.now())
+            color=0xffdf08
+        )
         msg.add_field(
             name="Version",
             value=f"{self.bot.version}",
@@ -106,22 +123,22 @@ class Information(commands.Cog):
             inline=False)
         msg.add_field(
             name="Built in",
-            value="**Language:** Python3\n**API Wrapper:** discord.py",
+            value="**Language:** Python3\n**API Wrapper:** discord.py==2.0.1",
             inline=False)
         msg.add_field(
             name="Developer Team",
             value="**1. Nur Alam\n2. Tamim Vaiya\n3. Rishikesh\n4. Soren_Blank\n5. Shajedul Karim**",
             inline=False)
         msg.add_field(
-            name="PH Website",
+            name="PH Websites",
             value="[Programming Hero](https://www.programming-hero.com/)\n[Blog](https://www.programming-hero.com/blog/)",
             inline=False)
         msg.add_field(
-            name="PH Application",
-            value="[Android App](https://is.gd/z11RUg)\n[Iphone Version](https://is.gd/eVH92i)",
+            name="PH Applications",
+            value="[Play Store](https://is.gd/z11RUg)\n[App Store](https://is.gd/eVH92i)",
             inline=False)
         msg.add_field(
-            name="PH Social Media",
+            name="PH Social Medias",
             value="[Facebook Page](https://m.facebook.com/programmingHero/)\n[Facebook Group](https://www.facebook.com/groups/programmingheroapp/)\n[Instagram](https://is.gd/6m3hgd)\n[Twitter](https://twitter.com/ProgrammingHero?s=09)\n[Youtube](https://is.gd/EulQLJ)\n[Pinterest](https://www.pinterest.com/programminghero1/)",
             inline=False)
         msg.set_author(
@@ -131,12 +148,15 @@ class Information(commands.Cog):
         msg.set_thumbnail(url=f"{self.bot.user.avatar.url}")
         msg.set_footer(
             text=f"Requested by {ctx.user}\nFibu | Programming Hero ")
-        await ctx.response.send_message(embed=msg, ephemeral=True)
+        await ctx.response.send_message(embed=msg)
 
     # user information - command
-    @app_commands.command(name="user", description="Displays information about the user")
+    @app_commands.command(
+        name="user-info",
+        description="Displays information about the user."
+    )
     @app_commands.describe(member="The member you want to get the information of.")
-    async def userinfo(self, ctx: discord.Interaction, member: discord.Member = None) -> None:
+    async def _userinfo(self, ctx: discord.Interaction, member: discord.Member = None) -> None:
         member = member or ctx.user
         ## Connect with database ##
         # con_fibu = pymongo.MongoClient(os.getenv("DB"))
@@ -146,13 +166,9 @@ class Information(commands.Cog):
 
         # find_user = tb.find_one(
         #     {"user_id": member.id, "guild_id": member.guild.id})
-        roles = []
-        for role in member.roles:
-            if role.name != "@everyone":
-                role_format = f"{role}"
-                roles.append(role_format)
 
-            #### Information Variables ####
+        #### Information Variables ####
+        roles = [f"{role}" for role in member.roles if role.name != "@everyone"]
         roles_format = "\n".join(f"{i}. {j}" for i, j in enumerate(
             roles, 1)) if len(roles) != 0 else "No Roles"
         guild = member.guild
@@ -171,73 +187,80 @@ class Information(commands.Cog):
             "dnd": "<:dnd:848819104446283806>",
             "do_not_disturb": "<:dnd:848819104446283806>",
         }
-        badges_value = {
-            0: None,
-            1 << 0: "Discord Employee",
-            1 << 1: "Partnered Server Owner",
-            1 << 2: "HypeSquad Events",
-            1 << 3: "Bug Hunter Level 1",
-            1 << 6: "House Bravery",
-            1 << 7: "House Brilliance",
-            1 << 8: "House Balance",
-            1 << 9: "Early Supporter",
-            1 << 10: "Team User",
-            1 << 14: "Bug Hunter Level 2",
-            1 << 16: "Verified Bot",
-            1 << 17: "Early Verified Bot Developer",
-            1 << 18: "Discord Certified Moderator"
-        }
+        # badges_value = {
+        #     0: None,
+        #     1 << 0: "Discord Employee",
+        #     1 << 1: "Partnered Server Owner",
+        #     1 << 2: "HypeSquad Events",
+        #     1 << 3: "Bug Hunter Level 1",
+        #     1 << 6: "House Bravery",
+        #     1 << 7: "House Brilliance",
+        #     1 << 8: "House Balance",
+        #     1 << 9: "Early Supporter",
+        #     1 << 10: "Team User",
+        #     1 << 14: "Bug Hunter Level 2",
+        #     1 << 16: "Verified Bot",
+        #     1 << 17: "Early Verified Bot Developer",
+        #     1 << 18: "Discord Certified Moderator"
+        # }
 
-        user_activities = member.activities
+        # user_activities = member.activities
         status = user_status.capitalize() if user_status != "dnd" else user_status.upper()
 
-        user_badges = ""
-        user_all_badges = member.public_flags.all()
-        for no, badge in enumerate(user_all_badges, 1):
-            value = badge.value
-            user_badges += f"{no}. {badges_value[value]}\n"
-        joined_guild = (member.joined_at).strftime("%a, %d-%b-%Y %I:%M %p")
-        created_acc = (member.created_at).strftime("%a, %d-%b-%Y %I:%M %p")
+        # user_badges = ""
+        # user_all_badges = member.public_flags.all()
+        # for no, badge in enumerate(user_all_badges, 1):
+        #     value = badge.value
+        #     user_badges += f"{no}. {badges_value[value]}\n"
+        joined_guild = int(time.mktime((member.joined_at).timetuple()))
+        created_acc = int(time.mktime((member.created_at).timetuple()))
 
         suf = "Bot " if bot_user else ""
-
         #### Embed Part ####
         info_em = discord.Embed(
             title=f"{suf}User Information",
-            color=random.choice(self.colors))
+            color=random.choice(self.colors)
+        )
         info_em.add_field(
             name="Name",
             value=f"```\n{user_name}\n```",
-            inline=True)
+            inline=True
+        )
         info_em.add_field(
             name="Tag",
             value=f"```\n#{user_tag}\n```",
-            inline=True)
+            inline=True
+        )
         info_em.add_field(
             name="ID",
             value=f"```\n{user_id}\n```",
-            inline=False)
+            inline=False
+        )
         if user_nickname:
             info_em.add_field(
                 name="Nickname",
                 value=f"```\n{user_nickname}\n```",
-                inline=False)
-            info_em.add_field(
-                name="Status",
-                value=f"{status_emoji[user_status]} ─ **{status}**",
-                inline=False)
-            info_em.add_field(
-                name=f"Joined {guild.name} at",
-                value=f"```\n{joined_guild}\n```",
-                inline=False)
-            info_em.add_field(
-                name="Account Created at",
-                value=f"```\n{created_acc}\n```",
-                inline=False)
-            info_em.add_field(
-                name="Badges",
-                value=user_badges,
-                inline=False) if not user_badges else None
+                inline=False
+            )
+        info_em.add_field(
+            name="Status",
+            value=f"{status_emoji[user_status]} ─ **{status}**",
+            inline=False
+        )
+        info_em.add_field(
+            name=f"Joined {guild.name} at",
+            value=f"<t:{joined_guild}:F>",
+            inline=False
+        )
+        info_em.add_field(
+            name="Account Created at",
+            value=f"<t:{created_acc}:F>",
+            inline=False
+        )
+        # info_em.add_field(
+        #     name="Badges",
+        #     value=user_badges,
+        #     inline=False) if not user_badges else None
         #    #### challenge"s information ####
         #     if find_user:
         #         output = f"Level: {find_user['level']}\nXP: {find_user['xp']}/{find_user['need_xp']}"
@@ -250,26 +273,43 @@ class Information(commands.Cog):
         #                 all_challenges += f"{no}. {challenge_name}\n"
         #             info_em.add_field(
         #                 name="Solved Challenges", value=f"```\n{all_challenges}\n```", inline=False)
-            ########
-            info_em.add_field(
-                name=f"Roles [{len(roles)}]",
-                value=f"```\n{roles_format}\n```",
-                inline=False)
-            info_em.set_thumbnail(url=f"{user_avatar}")
-            info_em.set_footer(
-                text=f"Requested by {ctx.user}\nFibu | Programming Hero ")
+        ########
+        info_em.add_field(
+            name=f"Roles [{len(roles)}]",
+            value=f"```\n{roles_format}\n```",
+            inline=False
+        )
+        info_em.set_thumbnail(url=f"{user_avatar}")
+        info_em.set_footer(
+            text=f"Requested by {ctx.user}\nFibu | Programming Hero "
+        )
 
-            await ctx.response.send_message(embed=info_em)
-    # avatar
+        await ctx.response.send_message(embed=info_em)
 
-    @app_commands.command(name="avatar", description="Displays user avatar.")
-    async def _av(self, ctx: discord.Interaction, member: discord.Member = None):
+    # avatar - command
+    @app_commands.command(
+        name="avatar",
+        description="Displays user avatar."
+    )
+    @app_commands.describe(member="The member you want to get the avatar of.")
+    async def _av(self, ctx: discord.Interaction, member: discord.Member = None) -> None:
         member = member or ctx.user
+        # avatar in other formats
+        jpg = member.avatar.with_format("jpg").url
+        png = member.avatar.with_format("png").url
+        webp = member.avatar.with_format("webp").url
+        try:
+            gif = None if member.avatar.is_animated() else member.avatar.replace("gif").url
+        except:
+            gif = None
+
         avatar = discord.Embed(
             title="Avatar",
-            color=0xffdf08)
+            description=f"[JPG]({jpg}) | [PNG]({png}) | [WEBP]({webp}) {'| [GIF]({gif})' if gif else ''}",
+            color=0xffdf08
+        )
         avatar.set_image(url=member.avatar.url)
-        await ctx.response.send_message(embed=avatar, ephemeral=True)
+        await ctx.response.send_message(embed=avatar)
 
 
 async def setup(bot):
