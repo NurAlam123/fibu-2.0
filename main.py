@@ -1,14 +1,13 @@
-# discord imports
+# imports
 import discord
 from discord import app_commands
 from discord.ext import commands
-# other imports
 import os
 from dotenv import load_dotenv
 load_dotenv()
 
 # const variable
-MY_GUILD = discord.Object(839126064621027329)
+MY_GUILD = discord.Object(int(os.getenv("GUILD")))
 TOKEN = os.getenv("TOKEN")
 
 # client class [copied from discord.py examples repo]
@@ -45,16 +44,14 @@ bot.TEAM = [
 
 # version
 bot.version = 'v2.0'
-#####
-
-#### on ready event ###
+#### on ready event ####
 
 
 @bot.event
 async def on_ready():
     print(f"Logged in {bot.user}")
     print("------")
-#### ping command ###
+#### ping command ####
 
 
 @bot.tree.command(name="ping", description="Pong!")
@@ -64,7 +61,7 @@ async def ping(ctx: discord.Interaction):
         description=f"{round(bot.latency*1000)} _ms_!",
         color=0xffdf08)
     await ctx.response.send_message(embed=embed_message, ephemeral=True)
-####
+#### Sync commands ###
 
 
 @bot.tree.command()
