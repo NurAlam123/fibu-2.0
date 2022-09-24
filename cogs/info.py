@@ -1,4 +1,3 @@
-import imp
 import discord
 from discord import app_commands
 from discord.ext import commands
@@ -15,6 +14,7 @@ class Information(commands.Cog):
         self.colors = [0x7700fe, 0x340e72, 0xfdb706]
 
     # server information - command
+    @app_commands.guild_only()
     @app_commands.command(
         name="server-info",
         description="Show information about the server."
@@ -72,7 +72,7 @@ class Information(commands.Cog):
         )
         info_em.add_field(
             name="Server Created At",
-            value=f"```\n{guild_created_at}\n```",
+            value=f"<t:{guild_created_at}:F>",
             inline=False
         )
         if guild_description:
@@ -151,6 +151,7 @@ class Information(commands.Cog):
         await ctx.response.send_message(embed=msg)
 
     # user information - command
+    @app_commands.guild_only()
     @app_commands.command(
         name="user-info",
         description="Displays information about the user."
@@ -292,7 +293,7 @@ class Information(commands.Cog):
         description="Displays user avatar."
     )
     @app_commands.describe(member="The member you want to get the avatar of.")
-    async def _av(self, ctx: discord.Interaction, member: discord.Member = None) -> None:
+    async def _avatar(self, ctx: discord.Interaction, member: discord.Member = None) -> None:
         member = member or ctx.user
         # avatar in other formats
         jpg = member.avatar.with_format("jpg").url

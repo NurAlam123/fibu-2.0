@@ -21,7 +21,11 @@ class BotClient(commands.Bot):
         super().__init__(command_prefix=prefix, intents=intents)
 
     async def setup_hook(self):
-        await self.load_extension(f"cogs.info")
+        cogs = [
+            'info'
+        ]
+        for cog in cogs:
+            await self.load_extension(f"cogs.{cog}")
 
         self.tree.copy_global_to(guild=MY_GUILD)
         await self.tree.sync(guild=MY_GUILD)
@@ -36,7 +40,6 @@ intents.members = True
 bot = BotClient(prefix="/", intents=intents)
 
 # Bot variable
-# Team
 bot.TEAM = [
     838836138537648149,  # Nur
     664550550527803405,  # Tamim
@@ -44,16 +47,16 @@ bot.TEAM = [
     693375549686415381,  # Soren
     555452986885668886  # Karim
 ]  # our team's discord ids
+bot.version = 'v2.0'  # version
 
-# version
-bot.version = 'v2.0'
+
+########################
 #### on ready event ####
-
-
 @bot.event
 async def on_ready():
     print(f"Logged in {bot.user}")
     print("------")
+
 #### ping command ####
 
 
@@ -75,6 +78,43 @@ async def sync_command(ctx: discord.Interaction):
     await bot.tree.sync(guild=MY_GUILD)
     await ctx.response.send_message("Synced!!", ephemeral=True)
 #####
+
+
+def is_me():
+    def predicate(interaction: discord.Interaction) -> bool:
+        return interaction.user.id == 838836138537648149
+    return app_commands.check(predicate)
+
+#### Load and Unload ####
+
+
+@bot.tree.command(name="load")
+@is_me()
+async def _load(ctx: discord.Interaction, extension_name: str = None) -> None:
+    if extension_name:
+        await bot.load_extension(f"cog.{extension_name}")
+    else:
+        for _file in os.listdir("./cogs"):
+            if _file.endswith(".py"):
+                await bot.load_extension(f"cogs.{_file[:-3]}")
+    await ctx.response.send_message("Extension Loaded!")
+
+
+@bot.tree.command(name="unload")
+@is_me()
+async def _unload(ctx: discord.Interaction, extension_name: str = None) -> None:
+    if extension_name:
+        await bot.unload_extension(f"cog.{extension_name}")
+    else:
+        for _file in os.listdir("./cogs"):
+            if _file.endswith(".py"):
+                bot.unload_extension(f"cogs.{_file[:-3]}")
+    await ctx.response.send_message("Extension UnLoaded!")
+
+# @bot.tree.context_menu(name="Avatar", guild=MY_GUILD)
+# async def _avatar_context(ctx: discord.Interaction, member: discord.Member) -> None:
+#     from cogs.info import Information
+#     info = Information._avatar(bot, ctx, member)
 
 # hehe!! lets run the boy!! :D
 bot.run(TOKEN)
