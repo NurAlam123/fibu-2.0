@@ -1,0 +1,4 @@
+{% extends "layout.html" %}
+{% block body %}
+<li><a href="{{ url_for('echo_message', server_id=server_id) }}">Echo</a></li>
+{% endblock %}

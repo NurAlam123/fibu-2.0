@@ -2,9 +2,10 @@ import discord
 from quart import Quart, render_template, url_for, redirect, request
 from quart_discord import DiscordOAuth2Session, requires_authorization, Unauthorized
 import os
+from threading import Thread
 
 from main import bot
-
+# load .env variables
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -39,6 +40,21 @@ async def info():
     guilds = await user.fetch_guilds()
     return await render_template("info.html", user=user, guilds=guilds)
 
+# show servers settings
+
+
+@app.route("/<int:server_id>/settings")
+async def server_settings(server_id):
+    return await render_template("server.html", server_id=server_id, discord=discord)
+
+# handle echo command
+
+
+@app.route("/<int:server_id>/echo")
+async def echo_message(server_id):
+    guild = bot.id
+    # guild = discord.utils.get(guilds, id=server_id)
+    return await render_template("/commands/echo.html", server_id=server_id, guild=guild)
 # login via discord
 
 
@@ -78,6 +94,24 @@ async def callback():
 async def redirect_unauthorized(e):
     bot.url = request.url
     return redirect(url_for(".login"))
+
+# to run this file from main.py
+
+
+def run():
+    app.run(
+        host='0.0.0.0',
+        port=9999
+    )
+
+
+def keep_alive():
+    '''
+        Creates and starts new thread that runs the function run.
+        '''
+    t = Thread(target=run)
+    t.start()
+
 
 if __name__ == "__main__":
     app.run(debug=True)

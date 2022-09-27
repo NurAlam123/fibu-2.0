@@ -118,4 +118,6 @@ async def _unload(ctx: discord.Interaction, extension_name: str = None) -> None:
 
 if __name__ == "__main__":
     # hehe!! lets run the boy!! :D
+    from dashboard import keep_alive
+    keep_alive()
     bot.run(TOKEN)
