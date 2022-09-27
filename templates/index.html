@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+{% block body %}
+<h1>Dashboard</h1>
+{% if logged %}
+<!-- if logged == True -->
+<ul class="actions">
+    <li><a href="/logout/" class="button">Logout</a></li>
+</ul>
+<h2>Goto Page</h2>
+<ul>
+    <li><a href="{{ url_for('info') }}">Information</a></li>
+</ul>
+{% else %}
+<ul class="actions">
+    <li><a href="/login/" class="button">Log into Discord</a></li>
+</ul>
+{% endif %}
+{% endblock %}

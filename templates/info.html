@@ -1,0 +1,13 @@
+{% extends "layout.html" %}
+{% block body %}
+<img src="{{ user.avatar_url }}" alt="user avatar">
+<h2>Hello {{ user.name }}</h2>
+<h3>Guilds</h3>
+<ul>
+    {% for guild in guilds %}
+    {% if guild.permissions.administrator %}
+    <li><img src="{{ guild.icon_url }}" alt="guild icon">{{ guild.name }}</li>
+    {% endif %}
+    {% endfor %}
+</ul>
+{% endblock %}

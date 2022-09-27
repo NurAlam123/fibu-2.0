@@ -116,5 +116,6 @@ async def _unload(ctx: discord.Interaction, extension_name: str = None) -> None:
 #     from cogs.info import Information
 #     info = Information._avatar(bot, ctx, member)
 
-# hehe!! lets run the boy!! :D
-bot.run(TOKEN)
+if __name__ == "__main__":
+    # hehe!! lets run the boy!! :D
+    bot.run(TOKEN)
